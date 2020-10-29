@@ -1,0 +1,16 @@
+{
+    "driver" : "\\path\\to\\driver",
+    "credentials": {
+        "email" : "example@example.com",
+        "passw" : "pass"
+    },
+    "discord" : [
+        {
+            "server": "SERVERID",
+            "channels": [
+                "CHANNELID",
+                "CHANNELID"
+            ]
+        }
+    ]
+}
