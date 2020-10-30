@@ -16,13 +16,12 @@ class MessageCollection():
         self.get_message()
 
     def __getitem__(self, key):
-        value = self.df.iloc[key]
-        return value
+        if len(self.df.index) > 0:
+            value = self.df.iloc[key]
+            return value
 
     def __iter__(self):
         return (
-            # item
-            # for item in super().__iter__()
             item
             for item in self.df[::-1].iterrows()
         )
@@ -84,6 +83,10 @@ class MessageCollection():
             if fltr[1] is not None:
                 self.df = self.df[self.df["message"].str.contains(fltr[1])]
 
+        print(f"Writing {len(self.df.index)} lines to file")
+
+        self.df = self.df[::-1]
+        
         if fmt == "csv":
             self.df.to_csv(f"{output}.csv", header=False,index=False, 
                   doublequote=True, quoting=csv.QUOTE_NONNUMERIC, mode="a")

@@ -11,18 +11,13 @@ class ChatWindow():
 
     def scroll(self):
         try:
-            self.refresh()
-            self.driver.execute_script("document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0);")
+            self.driver.execute_script("return document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0)")
+            sleep(0.5)
         except Exception as err:
             print(str(err)) 
 
     def top(self):
-        if ( 
-        self.soup.find("div", class_=re.compile("^emptyChannelIcon-")) 
-        or self.soup.find("div", class_=re.compile("^inner-"))
-        ):
-            return True
-        return False
+        return self.driver.execute_script("return document.getElementsByClassName('scroller-2LSbBU')[0].scrollTop < 1 ? 1 : 0")
 
     def refresh(self):
         self.soup = BeautifulSoup(self.driver.find_element_by_id("chat-messages")
@@ -30,17 +25,15 @@ class ChatWindow():
 
     def messages(self, output, fmt, fltr):
         sleep(5)
-        self.refresh()
 
-        top = False
         stop = None
-
-        while not top:
-            sleep(2)
-            self.scroll()
-
+        while not self.top():
+            self.refresh()
+            
             messages = MessageCollection(self.soup, stop)
+            
             stop = messages[0]["messageid"]
+
             messages.dump(output, fmt, fltr)
 
-            top = self.top()
+            self.scroll()

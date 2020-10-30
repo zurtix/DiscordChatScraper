@@ -1,6 +1,7 @@
 import os
 from selenium import webdriver
 from .ChatWindow import ChatWindow
+from .MemberWindow import MemberWindow
 from .Utils import load_config
 from time import sleep
 
@@ -38,10 +39,12 @@ class DiscordScraper(ChatWindow):
         for d in config["discord"]:
             server = d["server"]
             for channel in d["channels"]:
+                print(f"Scraping https://discord.com/channels/{server}/{channel}")
                 self.driver.get(f"https://discord.com/channels/{server}/{channel}")
                 self.login(config["credentials"]["email"], 
                        config["credentials"]["passw"])
+                #self.members()
                 self.messages(f"{self.args.output}{channel}", 
-                                self.args.format, [self.args.user, self.args.search])
+                                self.args.format.lower(), [self.args.user, self.args.search])
             
         self.driver.close()
