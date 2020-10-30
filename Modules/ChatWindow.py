@@ -6,13 +6,13 @@ import csv
 import re
 
 class ChatWindow():
-    def __init__(self):
-        self.soup = None
+    def __init__(self, driver):
+        self.driver = driver
 
     def scroll(self):
         try:
-            self.driver.execute_script("return document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0)")
-            sleep(0.5)
+            self.driver.execute_script("document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0)")
+            sleep(1)
         except Exception as err:
             print(str(err)) 
 
@@ -20,20 +20,14 @@ class ChatWindow():
         return self.driver.execute_script("return document.getElementsByClassName('scroller-2LSbBU')[0].scrollTop < 1 ? 1 : 0")
 
     def refresh(self):
-        self.soup = BeautifulSoup(self.driver.find_element_by_id("chat-messages")
-            .get_attribute("innerHTML"), "html.parser")
+        return BeautifulSoup(self.driver.page_source, "html.parser")
 
     def messages(self, output, fmt, fltr):
         sleep(5)
 
         stop = None
-        while not self.top():
-            self.refresh()
-            
-            messages = MessageCollection(self.soup, stop)
-            
+        while not self.top():        
+            messages = MessageCollection(self.refresh(), stop)          
             stop = messages[0]["messageid"]
-
             messages.dump(output, fmt, fltr)
-
             self.scroll()

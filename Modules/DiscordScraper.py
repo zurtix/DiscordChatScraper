@@ -8,8 +8,14 @@ from time import sleep
 class DiscordScraper(ChatWindow):
     def __init__(self, args):
         self.args = args
-        self.driver = None
-        super().__init__()
+        self.config = load_config(self.args.config)
+
+        if self.config is None:
+            exit(-1)
+
+        self.driver = webdriver.Firefox(executable_path=self.config["driver"])
+
+        super().__init__(self.driver)
 
     def login(self, e, p):
         try:
@@ -24,27 +30,22 @@ class DiscordScraper(ChatWindow):
             print("Login page not found!")
 
     def run(self):
-        config = load_config(self.args.config)
-
-        self.driver = webdriver.Firefox(executable_path=config["driver"])
-
         try:
             if not os.path.exists(self.args.output):
                 os.makedirs(self.args.output)
         except Exception as e:
-            print("Unable to created output directory, please check your permissions")
+            print(f"Error Occured: {type(e).__name__} {e.args}")
             exit(-1)
 
-
-        for d in config["discord"]:
+        for d in self.config["discord"]:
             server = d["server"]
             for channel in d["channels"]:
                 print(f"Scraping https://discord.com/channels/{server}/{channel}")
                 self.driver.get(f"https://discord.com/channels/{server}/{channel}")
-                self.login(config["credentials"]["email"], 
-                       config["credentials"]["passw"])
+                self.login(self.config["credentials"]["email"], 
+                       self.config["credentials"]["passw"])
                 #self.members()
                 self.messages(f"{self.args.output}{channel}", 
                                 self.args.format.lower(), [self.args.user, self.args.search])
-            
+       
         self.driver.close()

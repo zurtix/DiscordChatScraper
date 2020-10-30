@@ -45,6 +45,9 @@ class MessageCollection():
                 return match.group()
         return ""
 
+    def get_message_date(self, message):
+        return ""
+
     def get_message(self): 
         if self.collection is None:
             return
@@ -56,6 +59,7 @@ class MessageCollection():
             mesg = self.get_text(message)
             mesgid = message.get("id").replace("chat-messages-", "")
             user = self.get_user(message)
+            dt = self.get_message_date(message)
             id = self.get_id_from_avatar(message)
 
             if mesgid == self.stop:
@@ -71,12 +75,16 @@ class MessageCollection():
             data = ({"userid": id, 
                      "user": user, 
                      "messageid" : mesgid,
+                     "messagedate": dt,
                      "message": mesg.text.replace("\n", " ")
                     })
 
             self.df = self.df.append(data, ignore_index=True)
 
     def dump(self, output, fmt=None, fltr=None):
+        if len(self.df.index) == 0:
+            return
+
         if fltr is not None:
             if fltr[0] is not None:
                 self.df = self.df[self.df.user == fltr[0]]

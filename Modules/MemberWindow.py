@@ -8,15 +8,16 @@ class MemberWindow():
 
     def scroll(self, channel):
         try:
-            self.refresh()
             self.driver.execute_script(f"document.getElementsByClassName('members-{channel}')[0].scrollTo(0, 0);")
+            sleep(0.5)
         except Exception as err:
             print(str(err)) 
 
     def bottom(self):
-            self.driver.execute_script(f"""document.getElementById('members-{channel}'').scrollHeight 
+            self.driver.execute_script(f"""
+            return document.getElementById('members-{channel}').scrollHeight 
             - document.getElementById('members-{channel}').scrollTop 
-            - document.getElementById('members-{channel}').clientHeight < 1""")
+            - document.getElementById('members-{channel}').clientHeight < 1 ? 1 : 0""")
 
     def refresh(self):
         self.soup = BeautifulSoup(self.driver.find_element_by_id("menbers-")
@@ -24,10 +25,11 @@ class MemberWindow():
 
     def members(self):
         sleep(5)
-        self.refresh()
 
         stop = None
-
-        while not self.bottom():
-            sleep(2)
+        while not self.top():
+            self.refresh()       
+            members = MemberCollection(self.soup, stop)            
+            stop = members[0]["userid"]
+            members.dump(f"{output}_users", fmt, fltr)
             self.scroll()
