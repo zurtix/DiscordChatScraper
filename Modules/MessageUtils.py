@@ -1,9 +1,10 @@
+from .Common import to_file
 from bs4 import BeautifulSoup
 from time import sleep
+
 import re
 import pandas as pd
-import os
-import csv
+
 
 
 def get_message_text(m):
@@ -69,7 +70,7 @@ def get_messages(html, stop=None):
 
     return df
 
-def dump(messages, output, fmt=None, fltr=None):
+def dump(messages, output, fmt, fltr=None):
     if len(messages.index) == 0:
         return
 
@@ -83,11 +84,4 @@ def dump(messages, output, fmt=None, fltr=None):
 
     messages = messages[::-1]
     
-    if fmt == "csv":
-        messages.to_csv(f"{output}.csv", header=False,index=False, 
-                doublequote=True, quoting=csv.QUOTE_NONNUMERIC, mode="a")
-    else:
-        if not os.path.exists(f"{output}.json"):
-            messages.to_json(f"{output}.json",orient="records", lines=True)
-        else:
-            open(f"{output}.json", "a").write(messages.to_json(orient="records", lines=True))
+    to_file(messages, f"{output}.{fmt}", fmt)

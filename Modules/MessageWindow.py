@@ -1,10 +1,8 @@
 from time import sleep
-from .MessageUtil import get_messages, dump
+from .MessageUtils import get_messages, dump
 from bs4 import BeautifulSoup
 
 import re
-
-
 
 class MessageWindow():
     def __init__(self, driver, speed):

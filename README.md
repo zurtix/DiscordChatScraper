@@ -29,7 +29,7 @@ Chat logs will display in reverse due to the lazy loading that occurs within the
 
     -h, --help show this help message and exit
         
-    -f FORMAT, --format FORMAT Format types are, CSV, or JSON **(Required)**
+    -f FORMAT, --format FORMAT Format types are, csv or json
         
     -o OUTPUT, --output OUTPUT Output directory of where to place results **(Required)**
         

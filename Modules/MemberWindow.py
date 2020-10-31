@@ -1,7 +1,8 @@
-import re
 from time import sleep
 from bs4 import BeautifulSoup
 from .MemberUtils import get_members, dump
+
+import re
 
 
 class MemberWindow():

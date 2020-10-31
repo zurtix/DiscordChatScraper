@@ -1,9 +1,11 @@
-import os
 from selenium import webdriver
 from .MessageWindow import MessageWindow
 from .MemberWindow import MemberWindow
 from .Common import load_config
 from time import sleep
+
+import os
+
 
 class DiscordScraper():
     def __init__(self, args):
@@ -45,10 +47,10 @@ class DiscordScraper():
                 print(f"Scraping https://discord.com/channels/{server}/{channel}")
 
                 self.launch(server, channel)
-                member_window.members(f"{self.args.output}{channel}", channel, self.args.format.lower())
+                member_window.members(f"{self.args.output}{channel}", channel, self.args.format)
 
                 self.launch(server, channel)
                 message_window.messages(f"{self.args.output}{channel}", 
-                                self.args.format.lower(), [self.args.user, self.args.search])
+                                self.args.format, [self.args.user, self.args.search])
        
         self.driver.close()

@@ -1,4 +1,5 @@
-# To do...
+from .Common import to_file
+
 import re
 import pandas as pd
 import os
@@ -77,17 +78,10 @@ def get_members(html, stop=None):
 
     return df
 
-def dump(members, output, fmt=None, fltr=None):
+def dump(members, output, fmt, fltr=None):
     if len(members.index) == 0:
         return
 
     print(f"Writing {len(members.index)} lines to {output}_users")
     
-    if fmt == "csv":
-        members.to_csv(f"{output}_users.csv", header=False,index=False, 
-                doublequote=True, quoting=csv.QUOTE_NONNUMERIC, mode="a")
-    else:
-        if not os.path.exists(f"{output}.json"):
-            members.to_json(f"{output}.json",orient="records", lines=True)
-        else:
-            open(f"{output}_users.json", "a").write(members.to_json(orient="records", lines=True))
+    to_file(members, f"{output}_users.{fmt}", fmt)
