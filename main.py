@@ -1,5 +1,5 @@
 from Modules.DiscordScraper import DiscordScraper
-from Modules.Common import check_positive, check_output, check_config, check_format
+from Modules.Utils.Common import check_positive, check_output, check_config, check_format
 import argparse
 
 if __name__ == "__main__":

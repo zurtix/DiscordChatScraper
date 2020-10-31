@@ -29,13 +29,13 @@ Chat logs will display in reverse due to the lazy loading that occurs within the
 
     -h, --help show this help message and exit
         
-    -f FORMAT, --format FORMAT Format types are, csv or json
+    -f FORMAT, --format FORMAT Format types are, csv or json, default=csv
         
-    -o OUTPUT, --output OUTPUT Output directory of where to place results **(Required)**
+    -o OUTPUT, --output OUTPUT Output directory of where to place results, required=True
         
     -s SEARCH, --search SEARCH Text to search for within messages
         
-    -c CONFIG, --config CONFIG Path to config file **(Required)**
+    -c CONFIG, --config CONFIG Path to config file, equired=True
      
     -u USER, --user USER  Retrieve only message by this user
 

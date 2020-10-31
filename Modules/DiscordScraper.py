@@ -1,7 +1,7 @@
 from selenium import webdriver
 from .MessageWindow import MessageWindow
 from .MemberWindow import MemberWindow
-from .Common import load_config
+from .Utils.Common import load_config
 from time import sleep
 
 import os

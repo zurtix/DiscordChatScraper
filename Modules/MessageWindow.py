@@ -1,5 +1,5 @@
 from time import sleep
-from .MessageUtils import get_messages, dump
+from .Utils.MessageUtils import get_messages, dump
 from bs4 import BeautifulSoup
 
 import re
