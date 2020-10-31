@@ -1,11 +1,11 @@
 import os
 from selenium import webdriver
-from .ChatWindow import ChatWindow
+from .MessageWindow import MessageWindow
 from .MemberWindow import MemberWindow
-from .Utils import load_config
+from .Common import load_config
 from time import sleep
 
-class DiscordScraper(ChatWindow):
+class DiscordScraper():
     def __init__(self, args):
         self.args = args
         self.config = load_config(self.args.config)
@@ -14,8 +14,8 @@ class DiscordScraper(ChatWindow):
             exit(-1)
 
         self.driver = webdriver.Firefox(executable_path=self.config["driver"])
-
-        super().__init__(self.driver)
+        self.speed = self.args.speed
+        #super().__init__(self.driver, self.args.speed)
 
     def login(self, e, p):
         try:
@@ -29,23 +29,26 @@ class DiscordScraper(ChatWindow):
         except:
             print("Login page not found!")
 
+    def launch(self, server, channel):
+        self.driver.get(f"https://discord.com/channels/{server}/{channel}")
+        self.login(self.config["credentials"]["email"], self.config["credentials"]["passw"])
+
     def run(self):
-        try:
-            if not os.path.exists(self.args.output):
-                os.makedirs(self.args.output)
-        except Exception as e:
-            print(f"Error Occured: {type(e).__name__} {e.args}")
-            exit(-1)
 
         for d in self.config["discord"]:
             server = d["server"]
+
+            member_window = MemberWindow(self.driver, self.speed)
+            message_window = MessageWindow(self.driver, self.speed)
+
             for channel in d["channels"]:
                 print(f"Scraping https://discord.com/channels/{server}/{channel}")
-                self.driver.get(f"https://discord.com/channels/{server}/{channel}")
-                self.login(self.config["credentials"]["email"], 
-                       self.config["credentials"]["passw"])
-                #self.members()
-                self.messages(f"{self.args.output}{channel}", 
+
+                self.launch(server, channel)
+                member_window.members(f"{self.args.output}{channel}", channel, self.args.format.lower())
+
+                self.launch(server, channel)
+                message_window.messages(f"{self.args.output}{channel}", 
                                 self.args.format.lower(), [self.args.user, self.args.search])
        
         self.driver.close()
