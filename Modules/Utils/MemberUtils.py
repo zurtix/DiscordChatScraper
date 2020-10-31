@@ -60,8 +60,8 @@ def get_members(html, stop=None):
             utype = get_member_type(element)
             activity = get_member_activity(element)
 
-            if user == stop:
-                break
+            # if user == stop:
+            #     break
 
             data = ({"userid": id, 
                         "user": user, 

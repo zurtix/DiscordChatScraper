@@ -1,14 +1,14 @@
 from .Common import to_file
 from bs4 import BeautifulSoup
 from time import sleep
+from datetime import datetime
 
 import re
 import pandas as pd
 
-
-
 def get_message_text(m):
-    return m.find("div", class_=re.compile("messageContent-"))
+    message = m.find("div", class_=re.compile("messageContent-"))
+    return message.text.replace("\n", " ")
 
 def get_message_id(m):
     return m.get("id").replace("chat-messages-", "")
@@ -27,46 +27,83 @@ def get_message_user_id(m):
             return match.group()
     return ""
 
-def get_message_date(message):
-    return ""
+def get_message_date(e):
+    if e is None or not e.text :
+        return datetime(1990, 1, 1)
+
+    return datetime.strptime(e.text, "%B %d, %Y")
+
+def get_message_time(m):
+    time = m.find("span", class_=re.compile("timestamp-"))
+
+    if not time.text:
+        return ""
+
+    time = time.text
+    time = time.replace("]", "")
+    time = time.replace("[", "")
+    return datetime.strptime(time.strip(), "%I:%M %p")
+    
+
+def get_message_full_date(date, time):
+    if not date:
+        return time.time()
+    else:
+        date_time = datetime.combine(date, time.time())
+        return date_time.strftime('%Y-%m-%dT%H:%M:%S%z')
 
 def get_messages(html, stop=None): 
 
-    collection = html.find_all("div", id=re.compile("^chat-messages-"))
+    collection = html.find_all("div")
 
     if collection is None:
         return
 
     df = pd.DataFrame()
 
-    tempU = None
-    tempI = None
+    temp_user = None
+    temp_id = None
+    temp_date = None
 
-    for message in collection:
-        mesgid = get_message_id(message)
-        mesg = get_message_text(message)
-        user = get_message_user(message)
-        dt = get_message_date(message)
-        id = get_message_user_id(message)
+    for element in collection:
+        if element is None:
+            pass
 
-        if mesgid == stop:
-            break
+        if (
+            element.get("id") is not None and
+            "chat-messages-" in element.get("id")
+        ):
+            mesgid = get_message_id(element)
+            mesg = get_message_text(element)
+            user = get_message_user(element)
+            time = get_message_time(element)
+            dt = get_message_full_date(temp_date, time)
+            id = get_message_user_id(element)
 
-        if not user and not id:
-            user = tempU
-            id = tempI
-        else:
-            tempU = user
-            tempI = id
+            if mesgid == stop:
+                break
 
-        data = ({"userid": id, 
-                    "user": user, 
-                    "messageid" : mesgid,
-                    "messagedate": dt,
-                    "message": mesg.text.replace("\n", " ")
-                })
+            if not user and not id:
+                user = temp_user
+                id = temp_id
+            else:
+                temp_user = user
+                temp_id = id
 
-        df = df.append(data, ignore_index=True)
+            data = ({"userid": id, 
+                        "user": user, 
+                        "messageid" : mesgid,
+                        "messagedate": dt,
+                        "message": mesg
+                    })
+
+            df = df.append(data, ignore_index=True)
+
+        if (
+            element.get("class") is not None and
+            "divider-3_HH5L" in element.get("class")
+        ):
+            temp_date = get_message_date(element)
 
     return df
 

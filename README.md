@@ -19,7 +19,6 @@ python3 main.py [args]
 Chat logs will display in reverse due to the lazy loading that occurs within the web client
 
 #### Features to come
-* Message datetime stamps
 * Bypass NSFW channel notice
 
 

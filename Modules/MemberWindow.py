@@ -2,6 +2,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 from .Utils.MemberUtils import get_members, dump
 
+import pandas as pd
 import re
 
 
@@ -35,13 +36,14 @@ class MemberWindow():
         stop = None
         temp = None
 
-        while True:
+        while not self.bottom():
             data = self.refresh()
             members = get_members(data, stop)
 
             if members.equals(temp) or len(members.index) == 0:
-                # verify we didn't experience packet loss
                 break
+
+            print(members.iloc[0])
 
             stop = members.iloc[0]["user"]
             temp = members
@@ -49,5 +51,4 @@ class MemberWindow():
             dump(members, output, fmt, fltr)
 
             self.scroll(channel)
-
             sleep(self.speed)
