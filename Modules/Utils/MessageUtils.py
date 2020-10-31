@@ -36,21 +36,33 @@ def get_message_date(e):
 def get_message_time(m):
     time = m.find("span", class_=re.compile("timestamp-"))
 
-    if not time.text:
-        return ""
+    t = datetime(1990, 1, 1, 1, 1, 1)
 
-    time = time.text
-    time = time.replace("]", "")
-    time = time.replace("[", "")
-    return datetime.strptime(time.strip(), "%I:%M %p")
+    if time is None or not time.text:
+        return t
+
+    try:
+        time = time.text
+        time = time.replace("]", "")
+        time = time.replace("[", "")
+        return datetime.strptime(time.strip(), "%I:%M %p")
+    except:
+        return t
     
 
 def get_message_full_date(date, time):
-    if not date:
-        return time.time()
-    else:
-        date_time = datetime.combine(date, time.time())
-        return date_time.strftime('%Y-%m-%dT%H:%M:%S%z')
+
+    d = datetime(1990, 1, 1)
+    t = datetime(1990, 1, 1, 1, 1, 1)
+
+    if date:
+        d = date
+
+    if time:
+        t = time
+ 
+    date_time = datetime.combine(d, t.time())
+    return date_time.strftime("%Y-%m-%dT%H:%M:%S%z")
 
 def get_messages(html, stop=None): 
 

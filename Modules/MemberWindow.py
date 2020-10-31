@@ -43,8 +43,6 @@ class MemberWindow():
             if members.equals(temp) or len(members.index) == 0:
                 break
 
-            print(members.iloc[0])
-
             stop = members.iloc[0]["user"]
             temp = members
 
