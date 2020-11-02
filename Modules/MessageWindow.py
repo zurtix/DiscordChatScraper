@@ -12,6 +12,7 @@ class MessageWindow():
     def scroll(self):
         try:
             self.driver.execute_script("document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0)")
+            sleep(self.speed)
         except Exception as err:
             print(str(err)) 
 
@@ -28,8 +29,7 @@ class MessageWindow():
             data = self.refresh()
             messages = get_messages(data, stop)
 
-            if messages.equals(temp) or len(messages.index) == 0:
-                # verify we didn't experience packet loss
+            if messages.equals(temp) or messages.empty:
                 break
 
             stop = messages.iloc[0]["messageid"]
@@ -37,5 +37,3 @@ class MessageWindow():
 
             dump(messages, output, fmt, fltr)
             self.scroll()
-
-            sleep(self.speed)

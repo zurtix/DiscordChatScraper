@@ -15,7 +15,7 @@ def get_member_activity(m):
 
 def get_member_id(m):
     avatar = m.find("img", class_=re.compile("^avatar-"))
-    aregex = re.compile("\d{18}")
+    aregex = re.compile("\\d{18}")
 
     if avatar is not None:
         match = aregex.search(avatar.get("src"))
@@ -28,13 +28,16 @@ def get_member_group(m):
         if "offline" in m.text.lower():
             return ""
         else:
-            return re.sub("\d+$", "", m.text)[:-1]
+            return re.sub("\\d+$", "", m.text)[:-1]
 
 def get_member_type(m):
     tag = m.find("span", class_=re.compile("^botTag-"))
     return "USER" if tag is None else "BOT"
 
-def get_members(html, stop=None): 
+def get_member_index(m):
+    return int(m.get("index"))
+
+def get_members(html, stop=0): 
 
     collection = html.find_all(["div", "h2"])
 
@@ -55,28 +58,31 @@ def get_members(html, stop=None):
             element.get("class") is not None and
             "member-3-YXUe" in element.get("class")
         ):
+            idx = get_member_index(element)
             id = get_member_id(element)
             user = get_member_name(element)
             utype = get_member_type(element)
             activity = get_member_activity(element)
 
-            # if user == stop:
-            #     break
+            if idx > stop:
 
-            data = ({"userid": id, 
-                        "user": user, 
-                        "type" : utype,
-                        "activity" : activity,
-                        "group" : group
-                    })
+                data = ({"userid": id, 
+                            "user": user, 
+                            "type" : utype,
+                            "activity" : activity,
+                            "group" : group
+                        })
 
-            df = df.append(data, ignore_index=True)
+                df = df.append(data, ignore_index=True)
         
-        if element.name == "h2":
+        if (
+            element.name == "h2" and 
+            element.get("class") is not None and
+            "membersGroup-v9BXpm" in element.get("class")          
+        ):
             group = get_member_group(element)
 
-
-    return df
+    return idx, df
 
 def dump(members, output, fmt, fltr=None):
     if len(members.index) == 0:

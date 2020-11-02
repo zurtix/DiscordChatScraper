@@ -19,7 +19,7 @@ def get_message_user(m):
 
 def get_message_user_id(m):
     avatar = m.find("img", class_=re.compile("^avatar-"))
-    aregex = re.compile("\d{18}")
+    aregex = re.compile("\\d{18}")
 
     if avatar is not None:
         match = aregex.search(avatar.get("src"))
