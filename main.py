@@ -11,6 +11,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--config", action="store", dest="config", help="Path to config file", required=True, type=check_config)
     parser.add_argument("-u", "--user", action="store", dest="user", help="Retrieve only message by this user")
     parser.add_argument("-p", "--speed", action="store", dest="speed", help="Sets number of seconds to wait between scrolling, may be required for slower connections", type=check_positive)
+    parser.add_argument("-x", "--skip-users", nargs="?", dest="skip", default=False)
 
     args = parser.parse_args()
     DiscordScraper(args).run()

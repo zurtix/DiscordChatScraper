@@ -31,7 +31,10 @@ def get_message_date(e):
     if e is None or not e.text :
         return datetime(1990, 1, 1)
 
-    return datetime.strptime(e.text, "%B %d, %Y")
+    try:
+        return datetime.strptime(e.text, "%B %d, %Y")
+    except:
+        return datetime(1990, 1, 1)
 
 def get_message_time(m):
     time = m.find("span", class_=re.compile("timestamp-"))

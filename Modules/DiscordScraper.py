@@ -17,7 +17,6 @@ class DiscordScraper():
 
         self.driver = webdriver.Firefox(executable_path=self.config["driver"])
         self.speed = self.args.speed
-        #super().__init__(self.driver, self.args.speed)
 
     def login(self, e, p):
         try:
@@ -46,8 +45,9 @@ class DiscordScraper():
             for channel in d["channels"]:
                 print(f"Scraping https://discord.com/channels/{server}/{channel}")
 
-                self.launch(server, channel)
-                member_window.members(f"{self.args.output}{channel}", channel, self.args.format)
+                if self.args.skip:
+                    self.launch(server, channel)
+                    member_window.members(f"{self.args.output}{channel}", channel, self.args.format)
 
                 self.launch(server, channel)
                 message_window.messages(f"{self.args.output}{channel}", 
