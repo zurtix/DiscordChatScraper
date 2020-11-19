@@ -1,46 +1,66 @@
-from selenium import webdriver
-from .MessageWindow import MessageWindow
-from .MemberWindow import MemberWindow
-from .Utils.Common import load_config
 from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from Modules.MessageWindow import MessageWindow
+from Modules.MemberWindow import MemberWindow
+from Modules.Utils.Common import load_config
+from bs4 import BeautifulSoup
 
 import os
+import re
 
+ele = {
+    "loginbtn" : "button-3k0cO7",
+    "continuebtn" : "button.action-yrVND8.button-38aScr.lookFilled-1Gx00P.actionRed-gYn8D3.sizeLarge-1vSeWK.grow-q77ONN",
+    "email" : "email",
+    "pass": "password",
+    "title": "title-1VcOOr"
+}
 
 class DiscordScraper():
     def __init__(self, args):
         self.args = args
         self.config = load_config(self.args.config)
-
-        if self.config is None:
-            exit(-1)
-
         self.driver = webdriver.Firefox(executable_path=self.config["driver"])
-        self.speed = self.args.speed
 
     def login(self, e, p):
         try:
-            email = self.driver.find_element_by_name("email")
-            passw = self.driver.find_element_by_name("password")
+            email = self.driver.find_element_by_name(ele["email"])
+            passw = self.driver.find_element_by_name(ele["pass"])
+            submit = self.driver.find_element_by_class_name(ele["loginbtn"])
+            
             email.send_keys(e)
-            passw.send_keys(p)
-            submit = self.driver.find_element_by_class_name('button-3k0cO7')
+            passw.send_keys(p)   
+            
             submit.click()
-            self.driver.implicitly_wait(10)
+            
+            sleep(10)
         except:
             print("Login page not found!")
+
+    def nsfw_check(self):
+        bs = BeautifulSoup(self.driver.page_source, "html.parser")
+        title = bs.find("div", class_=re.compile(ele["title"]))
+
+        if "NSFW Channel" not in title.text:
+            return
+
+        button = self.driver.find_element_by_css_selector(ele["continuebtn"])
+        button.click()
+
 
     def launch(self, server, channel):
         self.driver.get(f"https://discord.com/channels/{server}/{channel}")
         self.login(self.config["credentials"]["email"], self.config["credentials"]["passw"])
+        self.nsfw_check()
 
     def run(self):
 
         for d in self.config["discord"]:
             server = d["server"]
 
-            member_window = MemberWindow(self.driver, self.speed)
-            message_window = MessageWindow(self.driver, self.speed)
+            member_window = MemberWindow(self.driver, self.args.speed)
+            message_window = MessageWindow(self.driver, self.args.speed)
 
             for channel in d["channels"]:
                 print(f"Scraping https://discord.com/channels/{server}/{channel}")

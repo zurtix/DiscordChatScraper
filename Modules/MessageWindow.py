@@ -1,8 +1,12 @@
 from time import sleep
-from .Utils.MessageUtils import get_messages, dump
 from bs4 import BeautifulSoup
+from Modules.Utils.MessageUtils import get_messages, dump
 
 import re
+
+ele = {
+    "scroller" : "scroller-2LSbBU"
+}
 
 class MessageWindow():
     def __init__(self, driver, speed):
@@ -11,7 +15,7 @@ class MessageWindow():
 
     def scroll(self):
         try:
-            self.driver.execute_script("document.getElementsByClassName('scroller-2LSbBU')[0].scrollTo(0, 0)")
+            self.driver.execute_script(f"document.getElementsByClassName('{ele['scroller']}')[0].scrollTo(0, 0)")
             sleep(self.speed)
         except Exception as err:
             print(str(err)) 

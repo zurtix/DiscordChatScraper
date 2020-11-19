@@ -14,5 +14,8 @@ if __name__ == "__main__":
     parser.add_argument("-x", "--skip-users", nargs="?", dest="skip", default=False)
 
     args = parser.parse_args()
-    DiscordScraper(args).run()
-    
+
+    try:
+        DiscordScraper(args).run()
+    except:
+        exit(-1)

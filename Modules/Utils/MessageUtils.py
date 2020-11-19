@@ -6,19 +6,28 @@ from datetime import datetime
 import re
 import pandas as pd
 
+ele = {
+    "content" : "messageContent-",
+    "messgaes" : "chat-messages-",
+    "username" : "username-",
+    "avatar" : "^avatar-",
+    "timestamp" : "timestamp-",
+    "divider" : "divider-3_HH5L"
+}
+
 def get_message_text(m):
-    message = m.find("div", class_=re.compile("messageContent-"))
+    message = m.find("div", class_=re.compile(ele["content"]))
     return message.text.replace("\n", " ")
 
 def get_message_id(m):
     return m.get("id").replace("chat-messages-", "")
 
 def get_message_user(m):
-    user = m.find("span", class_=re.compile("username-"))
+    user = m.find("span", class_=re.compile(ele["username"]))
     return "" if user is None else user.text
 
 def get_message_user_id(m):
-    avatar = m.find("img", class_=re.compile("^avatar-"))
+    avatar = m.find("img", class_=re.compile(ele["avatar"]))
     aregex = re.compile("\\d{18}")
 
     if avatar is not None:
@@ -37,7 +46,7 @@ def get_message_date(e):
         return datetime(1990, 1, 1)
 
 def get_message_time(m):
-    time = m.find("span", class_=re.compile("timestamp-"))
+    time = m.find("span", class_=re.compile(ele["timestamp"]))
 
     t = datetime(1990, 1, 1, 1, 1, 1)
 
@@ -86,7 +95,7 @@ def get_messages(html, stop=None):
 
         if (
             element.get("id") is not None and
-            "chat-messages-" in element.get("id")
+            ele["messages"] in element.get("id")
         ):
             mesgid = get_message_id(element)
             mesg = get_message_text(element)
@@ -116,7 +125,7 @@ def get_messages(html, stop=None):
 
         if (
             element.get("class") is not None and
-            "divider-3_HH5L" in element.get("class")
+            ele["divider"] in element.get("class")
         ):
             temp_date = get_message_date(element)
 

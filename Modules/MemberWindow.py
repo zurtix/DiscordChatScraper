@@ -1,6 +1,6 @@
 from time import sleep
 from bs4 import BeautifulSoup
-from .Utils.MemberUtils import get_members, dump
+from Modules.Utils.MemberUtils import get_members, dump
 
 import pandas as pd
 import re

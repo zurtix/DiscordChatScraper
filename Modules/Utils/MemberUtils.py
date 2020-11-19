@@ -5,16 +5,25 @@ import pandas as pd
 import os
 import csv 
 
+ele = {
+    "name" : "^name-",
+    "activity": "activityText-",
+    "avatar" : "^avatar-",
+    "bot": "^botTag-",
+    "member": "member-3-YXUe",
+    "group": "membersGroup-v9BXpm"
+}
+
 def get_member_name(m):
-    user = m.find("div", class_=re.compile("^name-"))
+    user = m.find("div", class_=re.compile(ele["name"]))
     return "" if user is None else user.text
 
 def get_member_activity(m):
-    activity = m.find("div", class_=re.compile("activityText-"))
+    activity = m.find("div", class_=re.compile(ele["activity"]))
     return "" if activity is None else activity.text
 
 def get_member_id(m):
-    avatar = m.find("img", class_=re.compile("^avatar-"))
+    avatar = m.find("img", class_=re.compile(ele["avatar"]))
     aregex = re.compile("\\d{18}")
 
     if avatar is not None:
@@ -31,7 +40,7 @@ def get_member_group(m):
             return re.sub("\\d+$", "", m.text)[:-1]
 
 def get_member_type(m):
-    tag = m.find("span", class_=re.compile("^botTag-"))
+    tag = m.find("span", class_=re.compile(ele["bot"]))
     return "USER" if tag is None else "BOT"
 
 def get_member_index(m):
@@ -56,7 +65,7 @@ def get_members(html, stop=0):
         if (
             element.name == "div" and 
             element.get("class") is not None and
-            "member-3-YXUe" in element.get("class")
+            ele["member"] in element.get("class")
         ):
             idx = get_member_index(element)
             id = get_member_id(element)
@@ -78,7 +87,7 @@ def get_members(html, stop=0):
         if (
             element.name == "h2" and 
             element.get("class") is not None and
-            "membersGroup-v9BXpm" in element.get("class")          
+            ele["group"] in element.get("class")          
         ):
             group = get_member_group(element)
 
